@@ -1,0 +1,151 @@
+<!DOCTYPE html>  
+  
+<html xmlns="http://www.w3.org/1999/xhtml">  
+<head runat="server">  
+    <title></title>  
+    <!--[if lte IE 8]>  
+         document.write("NOT HTML5 Compatible!!");  
+    <![endif]-->  
+  
+  <script src="bower_components/angular/angular.js"></script>
+    <script type="text/javascript">  
+        var isHtml5Compatible = document.createElement('canvas').getContext != undefined;  
+  
+        if (isHtml5Compatible) {  
+            initiateLocalStorage();  
+  
+        }  
+  
+        function initiateLocalStorage() {  
+            // Create the AngularJS app   
+            var app = angular.module('Employees', ['storageService']);  
+  
+            // Create the Controller  
+            app.controller('EmployeesController', ['$scope', 'getLocalStorage', function ($scope, getLocalStorage) {  
+                $scope.appTitle = "LocalStorage Demo";  
+                $scope.appHeadline = "AngularJS and HTML5";  
+  
+                //Read the Employee List from LocalStorage  
+                $scope.employees = getLocalStorage.getEmployees();  
+  
+                //Count the Employee List  
+                $scope.count = $scope.employees.length;  
+  
+  
+                //Add Employee - using AngularJS push to add Employee in the Employee Object  
+                //Call Update Employee to update the locally stored Employee List  
+                //Reset the AngularJS Employee scope  
+                //Update the Count  
+                $scope.addEmployee = function () {  
+                    $scope.employees.push({ 'empno': $scope.empno, 'empname': $scope.empname, 'empsalary': $scope.empsalary });  
+                    getLocalStorage.updateEmployees($scope.employees);  
+                    $scope.empno = '';  
+                    $scope.empname = '';  
+                    $scope.empsalary = '';  
+                    $scope.count = $scope.employees.length;  
+                };  
+  
+                //Delete Employee - Using AngularJS splice to remove the emp row from the Employee list  
+                //All the Update Employee to update the locally stored Employee List  
+                //Update the Count  
+                $scope.deleteEmployee = function (emp) {  
+                    $scope.employees.splice($scope.employees.indexOf(emp), 1);  
+                    getLocalStorage.updateEmployees($scope.employees);  
+                    $scope.count = $scope.employees.length;  
+                };  
+            }]);  
+  
+            //Create the Storage Service Module  
+            //Create getLocalStorage service to access UpdateEmployees and getEmployees method  
+            var storageService = angular.module('storageService', []);  
+            storageService.factory('getLocalStorage', function () {  
+                var employeeList = {};  
+                return {  
+                    list: employeeList,  
+                    updateEmployees: function (EmployeesArr) {  
+                        if (window.localStorage && EmployeesArr) {  
+                            //Local Storage to add Data  
+                            localStorage.setItem("employees", angular.toJson(EmployeesArr));  
+                        }  
+                        employeeList = EmployeesArr;  
+  
+                    },  
+                    getEmployees: function () {  
+                        //Get data from Local Storage  
+                        employeeList = angular.fromJson(localStorage.getItem("employees"));  
+                        return employeeList ? employeeList : [];  
+                    }  
+                };  
+  
+            });  
+        }  
+    </script>  
+  
+</head>  
+<body ng-app="Employees">  
+  
+    <div ng-controller="EmployeesController">  
+  
+        <h1 class="app-title">{{ appTitle }}</h1>  
+        <h1 class="app-headline">{{ appHeadline }}</h1>  
+  
+        <form name="frm">  
+            <table>  
+                <tr>  
+                    <td>Emp No   :  
+  
+                    </td>  
+                    <td>  
+                        <input type="text" name="empno" ng-model="empno" required><br />  
+                    </td>  
+                </tr>  
+                <tr>  
+                    <td>Emp Name   :  
+  
+                    </td>  
+                    <td>  
+                        <input type="text" name="empname" ng-model="empname" required>  
+                    </td>  
+                </tr>  
+                <tr>  
+                    <td>Emp Salary   :  
+  
+                    </td>  
+                    <td>  
+                        <input type="text" name="empsalary" ng-model="empsalary">  
+                    </td>  
+                </tr>  
+                <tr>  
+                    <td colspan="2" align="right">  
+  
+                        <button ng-click="addEmployee()" ng-disabled="frm.$invalid">Add Employee</button>  
+                    </td>  
+  
+                </tr>  
+            </table>  
+        </form>  
+        <table cellpadding="4" cellspacing="4" border="1" style="border-collapse: collapse; border: solid 1px #000">  
+            <tr>  
+                <td><b>Emp No</b></td>  
+                <td><b>Emp Name</b></td>  
+                <td><b>Emp Salary</b></td>  
+                <td><b>Action</b></td>  
+            </tr>  
+            <tr ng-repeat="employee in employees">  
+                <td>{{ employee.empno }}  
+                </td>  
+                <td>{{ employee.empname }}  
+                </td>  
+                <td>{{ employee.empsalary }}  
+                </td>  
+                <td>  
+                    <button ng-click="deleteEmployee(employee)">Delete</button>  
+                </td>  
+            </tr>  
+  
+        </table>  
+        <div>Total Employees : {{count}}</div>  
+         </div>  
+  
+</body>  
+</html>  

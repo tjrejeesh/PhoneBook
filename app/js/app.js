@@ -8,7 +8,8 @@ var phonecatApp = angular.module('phonecatApp', [
 
   'phonecatControllers',
   'phonecatFilters',
-  'phonecatServices'
+  'phonecatServices',
+  'LocalStorageModule'
 ]);
 
 phonecatApp.config(['$routeProvider',
@@ -22,7 +23,34 @@ phonecatApp.config(['$routeProvider',
         templateUrl: 'partials/phone-detail.html',
         controller: 'PhoneDetailCtrl'
       }).
+      when('/cart', {
+        templateUrl: 'partials/cart.html',
+        controller: 'cartCtrl'
+      }).      
       otherwise({
         redirectTo: '/phones'
       });
   }]);
+
+/*phonecatApp.config(function (localStorageServiceProvider) {
+    localStorageServiceProvider.setPrefix('phonecatApp');
+);
+phonecatApp.config(function (localStorageServiceProvider) {
+  localStorageServiceProvider.setStorageType('sessionStorage');
+});
+phonecatApp.config(function (localStorageServiceProvider) {
+  localStorageServiceProvider.setStorageCookie(45, '<path>');
+});
+phonecatApp.config(function (localStorageServiceProvider) {
+  localStorageServiceProvider.setStorageCookieDomain('<domain>');
+});
+phonecatApp.config(function (localStorageServiceProvider) {
+  localStorageServiceProvider.setNotify(true, true);
+});*/
+
+phonecatApp.config(function (localStorageServiceProvider) {
+  localStorageServiceProvider
+    .setPrefix('phonecatApp')
+    .setStorageType('localStorage')//sessionStorage
+    .setNotify(true, true);
+});

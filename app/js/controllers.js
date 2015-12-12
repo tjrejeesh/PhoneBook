@@ -20,3 +20,42 @@ phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', 'Ph
       $scope.mainImageUrl = imageUrl;
     };
   }]);
+
+phonecatControllers.controller('cartCtrl', function($scope, localStorageService) {
+  $scope.checkStorage = function(){
+    if(localStorageService.isSupported) {
+      var storageType = localStorageService.getStorageType();
+      $scope.cartDetails = [
+        {
+          "sessionId" :"",
+          "cartId": "", 
+          "items": [
+            {
+              "itemId":"",
+              "itemName":"",
+              "quantity":"",
+              "itemDescription":"",
+              "price":""
+            },
+            {              
+              "itemId":"",
+              "itemName":"",
+              "quantity":"",
+              "itemDescription":"",
+              "price":""
+            }         
+          ], 
+          "userDetails":{
+              "userId":"1",
+              "userEmail": "test@avon.com", 
+              "contactNo": "9876431135"              
+            }
+        }
+      ];
+      localStorageService.set('cartDetails',$scope.cartDetails);
+      console.log(storageType);
+    }else{
+      alert('Not Supported Localstorage');
+    }
+  };
+});
